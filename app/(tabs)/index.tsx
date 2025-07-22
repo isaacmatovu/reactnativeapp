@@ -1,9 +1,15 @@
-import { StyleSheet, Text, View } from "react-native";
+import Button from "@/components/Button";
+import ImageViewer from "@/components/imageViewer";
+import { StyleSheet, View } from "react-native";
+
+const PlaceholderImage = require("../../assets/images/background-image.png");
 export default function Index() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>My niga.</Text>
-      <Text className="bg-white">hello man</Text>
+      <View className="flex-1">
+        <ImageViewer imgSource={PlaceholderImage} />
+        <Button />
+      </View>
     </View>
   );
 }
@@ -12,10 +18,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#25292e",
-    justifyContent: "center",
     alignItems: "center",
   },
   text: {
+    color: "white",
+  },
+  button: {
+    backgroundColor: "black",
     color: "white",
   },
 });
