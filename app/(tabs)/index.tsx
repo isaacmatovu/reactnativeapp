@@ -6,11 +6,16 @@ import EmojiSticker from "@/components/EmojiSticker";
 import IconButton from "@/components/IconButton";
 import ImageViewer from "@/components/imageView";
 import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
+import * as MediaLibrary from "expo-media-library";
+import { useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
+import { captureRef } from "react-native-view-shot";
 
 const PlaceholderImage = require("../../assets/images/background-image.png");
 export default function Index() {
+  const imageRef = useRef(null);
+  const [persmissionResponse, requestPermission] =
+    MediaLibrary.usePermissions();
   //selecting images on a device
   const [selectedImage, setSelectedImage] = useState<string | undefined>(
     undefined
@@ -18,6 +23,13 @@ export default function Index() {
   const [showAppOptions, setshowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [pickedEmoji, setPickedEmoji] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (!persmissionResponse?.granted) {
+      requestPermission();
+    }
+  }, []);
+
   const PickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
@@ -44,10 +56,24 @@ export default function Index() {
     setIsModalVisible(true);
   };
 
-  const onSaveImageAsync = async () => {};
+  const onSaveImageAsync = async () => {
+    try {
+      const localUri = await captureRef(imageRef, {
+        height: 440,
+        quality: 1,
+      });
+
+      await MediaLibrary.saveToLibraryAsync(localUri);
+      if (localUri) {
+        alert("Saved!");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
   return (
     <View style={styles.container}>
-      <View className="flex-1">
+      <View ref={imageRef} className="flex-1">
         <ImageViewer
           imgSource={selectedImage ? { uri: selectedImage } : PlaceholderImage}
         />
